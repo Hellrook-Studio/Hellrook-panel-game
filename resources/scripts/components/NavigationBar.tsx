@@ -53,9 +53,10 @@ export default () => {
                     <Link
                         to={'/'}
                         className={
-                            'text-2xl font-header font-medium px-4 no-underline text-neutral-200 hover:text-neutral-100 transition-colors duration-150'
+                            'inline-flex items-center text-2xl font-header font-medium px-4 no-underline text-neutral-200 hover:text-neutral-100 transition-colors duration-150'
                         }
                     >
+                        <img src={'/brand/favicon.svg'} alt={''} className={'w-8 h-8 mr-3 flex-none'} />
                         {name}
                     </Link>
                 </div>

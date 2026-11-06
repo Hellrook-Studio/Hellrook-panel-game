@@ -20,6 +20,7 @@ import { useLocation } from 'react-router';
 import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
 import routes from '@/routers/routes';
+import isEqual from 'react-fast-compare';
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
@@ -34,6 +35,12 @@ export default () => {
     const serverId = ServerContext.useStoreState((state) => state.server.data?.internalId);
     const getServer = ServerContext.useStoreActions((actions) => actions.server.getServer);
     const clearServerState = ServerContext.useStoreActions((actions) => actions.clearServerState);
+    const eggFeatures = ServerContext.useStoreState((state) => state.server.data?.eggFeatures, isEqual);
+
+    const serverRoutes = routes.server.filter(
+        (route) =>
+            (!route.adminOnly || rootAdmin) && (!route.eggFeature || (eggFeatures || []).includes(route.eggFeature))
+    );
 
     const to = (value: string, url = false) => {
         if (value === '/') {
@@ -76,7 +83,7 @@ export default () => {
                     <CSSTransition timeout={150} classNames={'fade'} appear in>
                         <SubNavigation>
                             <div>
-                                {routes.server
+                                {serverRoutes
                                     .filter((route) => !!route.name)
                                     .map((route) =>
                                         route.permission ? (
@@ -109,7 +116,7 @@ export default () => {
                         <ErrorBoundary>
                             <TransitionRouter>
                                 <Switch location={location}>
-                                    {routes.server.map(({ path, permission, component: Component }) => (
+                                    {serverRoutes.map(({ path, permission, component: Component }) => (
                                         <PermissionRoute key={path} permission={permission} path={to(path)} exact>
                                             <Spinner.Suspense>
                                                 <Component />

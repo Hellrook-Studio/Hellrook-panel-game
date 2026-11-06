@@ -7,6 +7,10 @@ export interface SiteSettings {
         enabled: boolean;
         siteKey: string;
     };
+    brand: {
+        url: string | null;
+        footer: string | null;
+    };
 }
 
 export interface SettingsStore {

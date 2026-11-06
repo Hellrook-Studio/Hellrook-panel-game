@@ -10,6 +10,7 @@ return [
     'auth' => [
         'fail' => 'Failed log in',
         'success' => 'Logged in',
+        'portal-sso' => 'Logged in from the portal',
         'password-reset' => 'Password reset',
         'reset-password' => 'Requested password reset',
         'checkpoint' => 'Two-factor authentication requested',

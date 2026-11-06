@@ -6,6 +6,7 @@ use Pterodactyl\Http\Controllers\Api\Client;
 use Pterodactyl\Http\Middleware\Activity\ServerSubject;
 use Pterodactyl\Http\Middleware\Activity\AccountSubject;
 use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
+use Pterodactyl\Http\Middleware\Api\Client\RequireRootAdmin;
 use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 
@@ -68,11 +69,13 @@ Route::group([
         ->name('api:client:server.ws');
     Route::get('/resources', Client\Servers\ResourceUtilizationController::class)->name('api:client:server.resources');
     Route::get('/activity', Client\Servers\ActivityLogController::class)->name('api:client:server.activity');
+    Route::get('/rf/status', Client\Servers\RfStatusController::class)->name('api:client:server.rf.status');
 
     Route::post('/command', [Client\Servers\CommandController::class, 'index']);
     Route::post('/power', [Client\Servers\PowerController::class, 'index']);
 
-    Route::group(['prefix' => '/databases'], function () {
+    // Databases dan Users dikelola provider: hanya admin (lihat RequireRootAdmin).
+    Route::group(['prefix' => '/databases', 'middleware' => RequireRootAdmin::class], function () {
         Route::get('/', [Client\Servers\DatabaseController::class, 'index']);
         Route::middleware([ResourceLimit::Database->middleware()])
             ->post('/', [Client\Servers\DatabaseController::class, 'store']);
@@ -120,7 +123,7 @@ Route::group([
         Route::delete('/allocations/{allocation}', [Client\Servers\NetworkAllocationController::class, 'delete']);
     });
 
-    Route::group(['prefix' => '/users'], function () {
+    Route::group(['prefix' => '/users', 'middleware' => RequireRootAdmin::class], function () {
         Route::get('/', [Client\Servers\SubuserController::class, 'index']);
         Route::middleware([ResourceLimit::Subuser->middleware()])
             ->post('/', [Client\Servers\SubuserController::class, 'store']);

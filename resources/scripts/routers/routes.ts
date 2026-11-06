@@ -13,6 +13,7 @@ import AccountApiContainer from '@/components/dashboard/AccountApiContainer';
 import AccountSSHContainer from '@/components/dashboard/ssh/AccountSSHContainer';
 import ActivityLogContainer from '@/components/dashboard/activity/ActivityLogContainer';
 import ServerActivityLogContainer from '@/components/server/ServerActivityLogContainer';
+import RfContainer from '@/components/server/rf/RfContainer';
 
 // Each of the router files is already code split out appropriately — so
 // all of the items above will only be loaded in when that router is loaded.
@@ -33,6 +34,10 @@ interface RouteDefinition {
 
 interface ServerRouteDefinition extends RouteDefinition {
     permission: string | string[] | null;
+    // Hanya untuk root admin; customer tidak melihat menu ini dan tidak bisa membuka halamannya.
+    adminOnly?: boolean;
+    // Hanya untuk server yang egg-nya punya feature ini (field "features" di file egg).
+    eggFeature?: string;
 }
 
 interface Routes {
@@ -75,6 +80,13 @@ export default {
             exact: true,
         },
         {
+            path: '/rf',
+            permission: null,
+            name: 'RF Online',
+            component: RfContainer,
+            eggFeature: 'rf455',
+        },
+        {
             path: '/files',
             permission: 'file.*',
             name: 'Files',
@@ -91,6 +103,7 @@ export default {
             permission: 'database.*',
             name: 'Databases',
             component: DatabasesContainer,
+            adminOnly: true,
         },
         {
             path: '/schedules',
@@ -109,6 +122,7 @@ export default {
             permission: 'user.*',
             name: 'Users',
             component: UsersContainer,
+            adminOnly: true,
         },
         {
             path: '/backups',

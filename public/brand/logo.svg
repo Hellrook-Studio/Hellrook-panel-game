@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200">
+  <g transform="translate(76 12)">
+    <rect width="88" height="88" rx="20" fill="#7c3aed"/>
+    <path d="M44 14 74 44 44 74 14 44Z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M44 32 56 44 44 56 32 44Z" fill="#fff"/>
+  </g>
+  <text x="120" y="160" text-anchor="middle" font-family="'IBM Plex Sans', Roboto, system-ui, sans-serif" font-size="38" font-weight="600" fill="#1f2933">RF Panel</text>
+  <text x="120" y="186" text-anchor="middle" font-family="'IBM Plex Sans', Roboto, system-ui, sans-serif" font-size="14" letter-spacing="3" fill="#7b8794">GAME SERVER HOSTING</text>
+</svg>

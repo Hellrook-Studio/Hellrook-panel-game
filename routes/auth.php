@@ -46,5 +46,12 @@ Route::post('/logout', [Auth\LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('auth.logout');
 
+// Login dari portal customer (token bertanda tangan, lihat PortalSsoController). Tanpa "guest"
+// supaya bisa berganti akun kalau browser masih login sebagai user lain.
+Route::get('/portal-sso', Auth\PortalSsoController::class)
+    ->withoutMiddleware('guest')
+    ->middleware('throttle:authentication')
+    ->name('auth.portal-sso');
+
 // Catch any other combinations of routes and pass them off to the React component.
 Route::fallback([Auth\LoginController::class, 'index']);

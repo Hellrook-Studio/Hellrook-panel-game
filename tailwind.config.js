@@ -1,5 +1,9 @@
 const colors = require('tailwindcss/colors');
 
+// Warna brand: tombol, link aktif, dan aksen di seluruh panel. Ganti baris ini lalu build ulang image panel,
+// mis. colors.indigo, colors.emerald, colors.rose (daftar: https://tailwindcss.com/docs/customizing-colors).
+const brand = colors.violet;
+
 const gray = {
     50: 'hsl(216, 33%, 97%)',
     100: 'hsl(214, 15%, 91%)',
@@ -26,10 +30,11 @@ module.exports = {
                 black: '#131a20',
                 // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
                 // in new code.
-                primary: colors.blue,
+                primary: brand,
+                blue: brand,
                 gray: gray,
                 neutral: gray,
-                cyan: colors.cyan,
+                cyan: brand,
             },
             fontSize: {
                 '2xs': '0.625rem',

@@ -27,6 +27,10 @@ class AssetComposer
                 'enabled' => config('recaptcha.enabled', false),
                 'siteKey' => config('recaptcha.website_key') ?? '',
             ],
+            'brand' => [
+                'url' => config('brand.url') ?: null,
+                'footer' => config('brand.footer') ?: null,
+            ],
         ]);
     }
 }

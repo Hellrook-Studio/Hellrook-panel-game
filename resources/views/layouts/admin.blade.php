@@ -39,7 +39,7 @@
         <div class="wrapper">
             <header class="main-header">
                 <a href="{{ route('index') }}" class="logo">
-                    <span>{{ config('app.name', 'Pterodactyl') }}</span>
+                    <span><img src="/brand/favicon.svg" alt="" style="height:24px;width:24px;margin:-3px 8px 0 0;">{{ config('app.name', 'Pterodactyl') }}</span>
                 </a>
                 <nav class="navbar navbar-static-top">
                     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
@@ -159,7 +159,13 @@
                     <strong><i class="fa fa-fw {{ $appIsGit ? 'fa-git-square' : 'fa-code-fork' }}"></i></strong> {{ $appVersion }}<br />
                     <strong><i class="fa fa-fw fa-clock-o"></i></strong> {{ round(microtime(true) - LARAVEL_START, 3) }}s
                 </div>
-                Copyright &copy; 2015 - {{ date('Y') }} <a href="https://pterodactyl.io/">Pterodactyl Software</a>.
+                @php($brandFooter = config('brand.footer') ?: '© ' . date('Y') . ' ' . config('app.name', 'Pterodactyl'))
+                @if(config('brand.url'))
+                    <a href="{{ config('brand.url') }}">{{ $brandFooter }}</a>
+                @else
+                    {{ $brandFooter }}
+                @endif
+                <span class="text-muted small">&middot; based on <a href="https://pterodactyl.io/">Pterodactyl</a></span>
             </footer>
         </div>
         @section('footer-scripts')
