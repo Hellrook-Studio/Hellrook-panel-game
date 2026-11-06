@@ -15,13 +15,22 @@ class LauncherStatusService
     private const STATUS_REQUEST = 0x01;
     private const STATUS_REPLY = 0x02;
     private const HEADER_SIZE = 4;
-    private const MAX_FRAME = 4096;
+    // Balasan status hanya berisi beberapa string pendek.
+    private const MAX_FRAME = 1024;
+
+    /** Batas waktu total satu query (koneksi + kirim + baca). */
+    private float $deadline = 0;
 
     /**
+     * Port launcher dikendalikan penyewa, jadi balasannya tidak dipercaya: seluruh query dibatasi
+     * $timeout detik secara total, bukan per pembacaan (supaya pengiriman byte demi byte tidak
+     * bisa menahan worker PHP).
+     *
      * @return array{online: bool, ready: bool, players: int, max_sessions: int, game: ?string, version: ?string, error: ?string}
      */
     public function query(string $host, int $port, float $timeout = 3.0): array
     {
+        $this->deadline = microtime(true) + $timeout;
         $result = [
             'online' => false,
             'ready' => false,
@@ -38,7 +47,7 @@ class LauncherStatusService
         }
 
         try {
-            stream_set_timeout($socket, (int) $timeout, (int) (fmod($timeout, 1) * 1_000_000));
+            $this->applyRemaining($socket);
             fwrite($socket, pack('vCC', self::HEADER_SIZE, self::CATEGORY, self::STATUS_REQUEST));
 
             $header = unpack('vsize/Ccategory/Cid', $this->read($socket, self::HEADER_SIZE));
@@ -78,6 +87,7 @@ class LauncherStatusService
     {
         $data = '';
         while (strlen($data) < $length) {
+            $this->applyRemaining($socket);
             $chunk = fread($socket, $length - strlen($data));
             if ($chunk === false || $chunk === '') {
                 throw new \RuntimeException(stream_get_meta_data($socket)['timed_out'] ? 'no reply (timeout)' : 'connection closed before the reply was complete');
@@ -86,6 +96,20 @@ class LauncherStatusService
         }
 
         return $data;
+    }
+
+    /**
+     * Timeout socket = sisa waktu sampai batas total; habis berarti gagal.
+     *
+     * @param resource $socket
+     */
+    private function applyRemaining($socket): void
+    {
+        $remaining = $this->deadline - microtime(true);
+        if ($remaining <= 0) {
+            throw new \RuntimeException('no reply (timeout)');
+        }
+        stream_set_timeout($socket, (int) $remaining, (int) (fmod($remaining, 1) * 1_000_000));
     }
 
     private function u8(string $payload, int &$offset): int

@@ -4,6 +4,8 @@ namespace Pterodactyl\Http\Controllers\Api\Client\Servers;
 
 use Pterodactyl\Models\Server;
 use Illuminate\Cache\Repository;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Pterodactyl\Services\Rf\LauncherStatusService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Pterodactyl\Http\Controllers\Api\Client\ClientApiController;
@@ -33,11 +35,21 @@ class RfStatusController extends ClientApiController
         $authPort = $allocation->port + 1;
         $host = config('rf.status_host') ?: (in_array($allocation->ip, ['0.0.0.0', '::'], true) ? 'host.docker.internal' : $allocation->ip);
 
-        $status = $this->cache->remember(
-            "rf:status:$server->uuid",
-            10,
-            fn () => $this->status->query($host, $authPort)
-        );
+        // Lock: saat cache kosong, hanya satu request yang membuka koneksi ke server game;
+        // request lain menunggu lalu memakai hasil yang sama.
+        $key = "rf:status:$server->uuid";
+        $status = $this->cache->get($key);
+        if ($status === null) {
+            try {
+                $status = Cache::lock("$key:lock", 6)->block(5, fn () => $this->cache->remember(
+                    $key,
+                    10,
+                    fn () => $this->status->query($host, $authPort)
+                ));
+            } catch (LockTimeoutException) {
+                $status = ['online' => false, 'ready' => false, 'players' => 0, 'max_sessions' => 0, 'game' => null, 'version' => null, 'error' => 'busy, try again'];
+            }
+        }
 
         return [
             'object' => 'rf_status',
