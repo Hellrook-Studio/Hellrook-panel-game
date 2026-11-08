@@ -11,10 +11,10 @@
         main { width: min(420px, calc(100% - 32px)); padding: 28px; background: #161a24; border: 1px solid #272d3d; border-radius: 12px; }
         h1 { margin: 0 0 12px; font-size: 1.3rem; }
         p { color: #b4bac7; line-height: 1.5; }
-        button { width: 100%; padding: 11px 16px; margin-top: 8px; border: 0; border-radius: 8px; background: #7c3aed; color: #fff;
+        button { width: 100%; padding: 11px 16px; margin-top: 8px; border: 0; border-radius: 8px; background: #f2a93b; color: #1b1203;
             font: inherit; font-weight: 600; cursor: pointer; }
-        button:focus-visible, a:focus-visible { outline: 3px solid #c4b5fd; outline-offset: 2px; }
-        a { display: block; margin-top: 14px; text-align: center; color: #c4b5fd; }
+        button:focus-visible, a:focus-visible { outline: 3px solid #f2a93b; outline-offset: 2px; }
+        a { display: block; margin-top: 14px; text-align: center; color: #e7e9ef; text-decoration-color: #f2a93b; }
     </style>
 </head>
 <body>
